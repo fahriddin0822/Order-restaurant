@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGua
 import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
-import { Roles } from '../../decorators/roles-auth.decorator';
+import { Roles } from '../decorators/roles-auth.decorator';
 import { RolesGuard } from '../guards/roles.guard';
 
 @Controller('reviews')

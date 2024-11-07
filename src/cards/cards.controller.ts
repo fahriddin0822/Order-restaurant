@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGua
 import { CardsService } from './cards.service';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
-import { Roles } from '../../decorators/roles-auth.decorator';
+import { Roles } from '../decorators/roles-auth.decorator';
 import { RolesGuard } from '../guards/roles.guard';
 import { SelfGuard } from '../guards/self.guard';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';

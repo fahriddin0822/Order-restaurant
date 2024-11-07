@@ -4,7 +4,7 @@ import { CreateTableDto } from './dto/create-table.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Tables } from './schemas/table.schema';
-import { Roles } from '../../decorators/roles-auth.decorator';
+import { Roles } from '../decorators/roles-auth.decorator';
 import { RolesGuard } from '../guards/roles.guard';
 
 @Roles("SUPERADMIN")

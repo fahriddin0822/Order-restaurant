@@ -17,7 +17,7 @@ import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Menu } from './schemas/menu.schema';
-import { Roles } from '../../decorators/roles-auth.decorator';
+import { Roles } from '../decorators/roles-auth.decorator';
 import { RolesGuard } from '../guards/roles.guard';
 
 @Roles("SUPERADMIN")

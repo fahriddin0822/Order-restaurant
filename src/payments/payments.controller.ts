@@ -3,7 +3,7 @@ import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/update-payment.dto';
 import { UpdatePaymentDto } from './dto/create-payment.dto';
 import { RolesGuard } from '../guards/roles.guard';
-import { Roles } from '../../decorators/roles-auth.decorator';
+import { Roles } from '../decorators/roles-auth.decorator';
 import { SelfGuard } from '../guards/self.guard';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 

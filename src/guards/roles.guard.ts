@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, ForbiddenException, Injectable, Unauthor
 import { Reflector } from "@nestjs/core";
 import { JwtService } from "@nestjs/jwt";
 import { Observable } from "rxjs";
-import { ROLES_KEY } from "../../decorators/roles-auth.decorator";
+import { ROLES_KEY } from "../decorators/roles-auth.decorator";
 
 
 @Injectable()

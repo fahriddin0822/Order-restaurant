@@ -6,7 +6,7 @@ import { AddRemoveRoleDto, SignUpWorkerDto, UpdateWorkerDto } from './dto';
 import { ActivateWorkerDto } from './dto/worker-activate.dto';
 import { SelfGuard } from '../guards/self.guard';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { Roles } from '../../decorators/roles-auth.decorator';
+import { Roles } from '../decorators/roles-auth.decorator';
 import { RolesGuard } from '../guards/roles.guard';
 
 @ApiTags('workers')
@@ -53,8 +53,10 @@ export class WorkersController {
     return this.workerService.findAll();
   }
 
-  @Roles("SUPERADMIN")
-  @UseGuards(JwtAuthGuard, SelfGuard, RolesGuard, JwtAuthGuard)
+  // @Roles("SUPERADMIN")
+  @UseGuards(SelfGuard)
+  @UseGuards(JwtAuthGuard)
+  // @UseGuards(RolesGuard)
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.workerService.findOne(id);

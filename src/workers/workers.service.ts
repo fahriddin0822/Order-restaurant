@@ -104,12 +104,14 @@ export class WorkersService {
     return workers[0];
   }
 
-  async remove(id: number): Promise<number> {
-    const worker = await this.workersModel.findByPk(id);
-    if (!worker) {
-      throw new NotFoundException("Worker not found.");
+  async remove(id: number): Promise<string> {
+    const result = await this.workersModel.destroy({ where: { id } });
+
+    if (result === 0) {
+      throw new NotFoundException(`Worker with ${id}-ID was not found.`);
     }
-  
-    return this.workersModel.destroy({ where: { id } });
+
+    return `Worker with ${id}-ID deleted successfully.`;
   }
+
 }

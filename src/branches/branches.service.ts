@@ -50,7 +50,13 @@ export class BranchesService {
     return worker[1][0];
   }
 
-  remove(id: number) {
-    return this.branchesModel.destroy({ where: { id } });
+  async remove(id: number): Promise<string> {
+    const result = await this.branchesModel.destroy({ where: { id } });
+
+    if (result === 0) {
+      throw new NotFoundException(`Branch with ${id}-ID was not found.`)
+    }
+
+    return `Branch with ${id}-ID deleted successfully.`;
   }
 }

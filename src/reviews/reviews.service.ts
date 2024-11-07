@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Reviews } from './schemas/review.schema';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class ReviewsService {
@@ -25,7 +26,14 @@ export class ReviewsService {
     return this.reviewModel.update(updateReviewDto, { where: { id }, returning: true });
   }
 
-  remove(id: number) {
-    return this.reviewModel.destroy({ where: { id } });
+  async remove(id: number): Promise<string> {
+    const result = await this.reviewModel.destroy({ where: { id } });
+
+    if (result === 0) {
+      throw new NotFoundException(`Review with ${id}-ID was not found.`);
+    }
+
+    return `Review with ${id}-ID deleted successfully.`;
   }
+
 }

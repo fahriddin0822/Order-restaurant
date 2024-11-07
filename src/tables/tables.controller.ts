@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { TablesService } from './tables.service';
 import { CreateTableDto } from './dto/create-table.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
@@ -51,10 +51,11 @@ export class TablesController {
     @Roles("SUPERADMIN")
     @UseGuards(RolesGuard)
     @Delete(':id')
-    @ApiOperation({ summary: 'Remove table by ID' })
-    @ApiResponse({ status: 200, description: 'The table has been successfully removed.' })
-    @ApiResponse({ status: 404, description: 'Table not found.' })
-    remove(@Param('id', ParseIntPipe) id: string) {
-        return this.tablesService.remove(+id);
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Delete a table by ID' })
+    @ApiResponse({ status: 200, description: 'The table has been successfully deleted.', schema: { example: { message: "table with {id}-ID deleted successfully." } } })
+    async remove(@Param('id', ParseIntPipe) id: string): Promise<{ message: string }> {
+        const message = await this.tablesService.remove(+id);
+        return { message };
     }
 }

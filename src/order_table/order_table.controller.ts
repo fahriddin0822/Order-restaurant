@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, HttpCode, HttpStatus } from '@nestjs/common';
 import { OrderTableService } from './order_table.service';
 import { CreateOrderTableDto } from './dto/create-order_table.dto';
 import { UpdateOrderTableDto } from './dto/update-order_table.dto';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('order-table')
 export class OrderTableController {
@@ -28,7 +29,11 @@ export class OrderTableController {
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: string) {
-    return this.orderTableService.remove(+id);
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Delete a order_table by ID' })
+  @ApiResponse({ status: 200, description: 'The order_table has been successfully deleted.', schema: { example: { message: "order_table with {id}-ID deleted successfully." } } })
+  async remove(@Param('id', ParseIntPipe) id: string): Promise<{ message: string }> {
+    const message = await this.orderTableService.remove(+id);
+    return { message };
   }
 }

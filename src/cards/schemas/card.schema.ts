@@ -34,6 +34,7 @@ export class Cards extends Model<Cards, CardCreationAttribute>{
     @Column({
         type: DataType.INTEGER,
         allowNull: false,
+        unique:true
     })
     number:number;
     

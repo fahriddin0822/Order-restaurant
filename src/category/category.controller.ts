@@ -7,12 +7,14 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Category } from './schemas/category.schema';
 import { Roles } from '../decorators/roles-auth.decorator';
 import { RolesGuard } from '../guards/roles.guard';
+import { InjectModel } from '@nestjs/sequelize';
 
 @Roles("SUPERADMIN")
 @ApiTags('Categories')
 @Controller('category')
 export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) {}
+  constructor(private readonly categoryService: CategoryService
+  ) {}
 
   @Roles("SUPERADMIN")
   @UseGuards(RolesGuard)
@@ -50,10 +52,11 @@ export class CategoryController {
   @Roles("SUPERADMIN")
   @UseGuards(RolesGuard)
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Delete a category by ID' })
-  @ApiResponse({ status: 204, description: 'The category has been successfully deleted.' })
-  async remove(@Param('id', ParseIntPipe) id: number) {
-    return await this.categoryService.remove(id);
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Delete a meal by ID' })
+  @ApiResponse({ status: 200, description: 'The meal has been successfully deleted.', schema: { example: { message: "Meal with {id}-ID deleted successfully." } } })
+  async remove(@Param('id', ParseIntPipe) id: string): Promise<{ message: string }> {
+    const message = await this.categoryService.remove(+id);
+    return { message };
   }
 }

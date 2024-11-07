@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { Cards } from './schemas/card.schema';
@@ -15,9 +15,12 @@ export class CardsService {
   ) { }
 
   async create(createCardDto: CreateCardDto) {
-    if(! await this.userService.findOne(createCardDto.userId)){
-      throw new NotFoundException("User is not exist.");
+    if (await this.cardModel.findOne({ where: { number: createCardDto.number } })){
+      throw new BadRequestException(`Card is exist with number:${createCardDto.number}`)
     }
+      if (! await this.userService.findOne(createCardDto.userId)) {
+        throw new NotFoundException("User is not exist.");
+      }
     return this.cardModel.create(createCardDto);
   }
 
@@ -42,7 +45,14 @@ export class CardsService {
     return card[1][0];
   }
 
-  remove(id: number) {
-    return this.cardModel.destroy({ where: { id } });
+  async remove(id: number): Promise<string> {
+    const result = await this.cardModel.destroy({ where: { id } });
+
+    if (result === 0) {
+      throw new NotFoundException(`Card with ${id}-ID was not found.`)
+    }
+
+    return `Card with ${id}-ID deleted successfully.`;
   }
+
 }

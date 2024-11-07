@@ -1,5 +1,5 @@
 // src/meals/meals.service.ts
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Meal } from './schemas/meal.schema';
 import { CreateMealDto } from './dto/create-meal.dto';
@@ -13,6 +13,11 @@ export class MealsService {
   ) { }
 
   async create(createMealDto: CreateMealDto): Promise<Meal> {
+    const meal = await this.mealModel.findOne({ where: { name: createMealDto.name } });
+
+    if (meal) {
+      throw new BadRequestException(`Meal with name ${createMealDto.name} is exist.`);
+    }
     return await this.mealModel.create(createMealDto);
   }
 
@@ -49,7 +54,15 @@ export class MealsService {
     return updatedMeal;
   }
 
-  async remove(id: number) {
-    return this.mealModel.destroy({ where: { id } })
+  async remove(id: number): Promise<string> {
+    const result = await this.mealModel.destroy({ where: { id } });
+
+    if (result === 0) {
+      throw new NotFoundException(`Meal with ${id}-ID was not found.`);
+    }
+
+    return `Meal with ${id}-ID deleted successfully.`;
   }
+
+
 }

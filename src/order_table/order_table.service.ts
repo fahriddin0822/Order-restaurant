@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOrderTableDto } from './dto/create-order_table.dto';
 import { UpdateOrderTableDto } from './dto/update-order_table.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { OrderTable } from './schemas/order_table.schema';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class OrderTableService {
@@ -24,7 +25,14 @@ export class OrderTableService {
     return this.orderTableModel.update(updateOrderTableDto, { where: { id } });
   }
 
-  remove(id: number) {
-    return this.orderTableModel.destroy({ where: { id } });
+  async remove(id: number): Promise<string> {
+    const result = await this.orderTableModel.destroy({ where: { id } });
+
+    if (result === 0) {
+      throw new NotFoundException(`Order table with ${id}-ID was not found.`);
+    }
+
+    return `Order table with ${id}-ID deleted successfully.`;
   }
+
 }

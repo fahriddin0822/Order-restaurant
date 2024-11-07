@@ -28,7 +28,14 @@ export class PaymentsService {
     return payment[1][0];
   }
 
-  remove(id: number) {
-    return this.paymentModel.destroy({ where: { id } });
+  async remove(id: number): Promise<string> {
+    const result = await this.paymentModel.destroy({ where: { id } });
+
+    if (result === 0) {
+      throw new NotFoundException(`Payment with ${id}-ID was not found.`);
+    }
+
+    return `Payment with ${id}-ID deleted successfully.`;
   }
+
 }

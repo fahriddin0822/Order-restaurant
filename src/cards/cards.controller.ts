@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { CardsService } from './cards.service';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
@@ -6,6 +6,7 @@ import { Roles } from '../decorators/roles-auth.decorator';
 import { RolesGuard } from '../guards/roles.guard';
 import { SelfGuard } from '../guards/self.guard';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 // @Roles("SUPERADMIN", "MANAGER")
 // @UseGuards(RolesGuard)
@@ -18,6 +19,8 @@ export class CardsController {
     return this.cardsService.create(createCardDto);
   }
 
+  @Roles("SUPERADMIN")
+  @UseGuards(RolesGuard)
   @Get('all')
   findAll() {
     return this.cardsService.findAll();
@@ -25,6 +28,7 @@ export class CardsController {
 
   
   @UseGuards(JwtAuthGuard)
+  @UseGuards(SelfGuard)
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: string) {
     return this.cardsService.findOne(+id);
@@ -40,8 +44,14 @@ export class CardsController {
     return this.cardsService.update(+id, updateCardDto);
   }
 
+  @Roles("SUPERADMIN")
+  @UseGuards(RolesGuard)
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: string) {
-    return this.cardsService.remove(+id);
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Delete a Card by ID' })
+  @ApiResponse({ status: 200, description: 'The Card has been successfully deleted.', schema: { example: { message: "Card with {id}-ID deleted successfully." } } })
+  async remove(@Param('id', ParseIntPipe) id: string): Promise<{ message: string }> {
+    const message = await this.cardsService.remove(+id);
+    return { message };
   }
 }

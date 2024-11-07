@@ -1,5 +1,5 @@
 // src/category/category.service.ts
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Category } from './schemas/category.schema';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -13,7 +13,10 @@ export class CategoryService {
   ) { }
 
   async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
-    return await this.categoryModel.create(createCategoryDto);
+    if ( await this.categoryModel.findOne({ where: { name: createCategoryDto.name } })){
+      throw new BadRequestException("Category is exist.");
+    }
+      return await this.categoryModel.create(createCategoryDto);
   }
 
   async findAll(): Promise<Category[]> {
@@ -41,12 +44,14 @@ export class CategoryService {
     return updatedCategory;
   }
 
-  async remove(id: number): Promise<{ message: string; deletedCategory: Category }> {
-    const category = await this.findOne(id);
-    await this.categoryModel.destroy({ where: { id } });
-    return {
-      message: `Category with ID ${id} and name "${category.name}" has been successfully deleted.`,
-      deletedCategory: category,
-    };
+  async remove(id: number): Promise<string> {
+    const result = await this.categoryModel.destroy({ where: { id } });
+
+    if (result === 0) {
+      throw new NotFoundException(`Category with ${id}-ID was not found.`);
+    }
+
+    return `Category with ${id}-ID deleted successfully.`;
   }
+
 }

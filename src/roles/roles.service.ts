@@ -1,15 +1,19 @@
 import { Roles } from "./schemas/role.schema";
 import { UpdateRoleDto } from "./dto/update-role.dto";
 import { CreateRoleDto } from "./dto/create-role.dto";
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { InjectModel } from "@nestjs/sequelize";
+import { NotFoundError } from "rxjs";
 
 @Injectable()
 export class RolesService {
   constructor(@InjectModel(Roles) private roleModel: typeof Roles) { }
 
   async create(createRoleDto: CreateRoleDto): Promise<Roles> {
+    if(await this.findRoleByName(createRoleDto.name)){
+      throw new BadRequestException(`${createRoleDto.name} is already exist.`)
+    }
     return await this.roleModel.create({
       name: createRoleDto.name.toUpperCase(),
       description: createRoleDto.description,
@@ -36,7 +40,14 @@ export class RolesService {
     return newRole[1]
   }
 
-  async remove(id: number): Promise<void> {
-    await this.roleModel.destroy({ where: { id } });
+  async remove(id: number): Promise<string> {
+    const result = await this.roleModel.destroy({ where: { id } });
+
+    if (result === 0) {
+      throw new NotFoundException(`Role with ${id}-ID was not found.`);
+    }
+
+    return `Role with ${id}-ID deleted successfully.`;
   }
+
 }

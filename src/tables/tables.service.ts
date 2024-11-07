@@ -37,8 +37,14 @@ export class TablesService {
     return this.findOne(id);
   }
 
-  async remove(id: number): Promise<number> {
-    const table = await this.findOne(id);
-    return this.tableModel.destroy({ where: { id: table.id } });
+  async remove(id: number): Promise<string> {
+    const result = await this.tableModel.destroy({ where: { id } });
+
+    if (result === 0) {
+      throw new NotFoundException(`Table with ${id}-ID was not found.`);
+    }
+
+    return `Table with ${id}-ID deleted successfully.`;
   }
+
 }

@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { Roles } from '../decorators/roles-auth.decorator';
 import { RolesGuard } from '../guards/roles.guard';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Roles("SUPERADMIN")
 @Controller('roles')
@@ -50,7 +51,11 @@ export class RolesController {
   @Roles("SUPERADMIN")
   @UseGuards(RolesGuard)
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: string) {
-    return this.rolesService.remove(+id);
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Delete a role by ID' })
+  @ApiResponse({ status: 200, description: 'The role has been successfully deleted.', schema: { example: { message: "role with {id}-ID deleted successfully." } } })
+  async remove(@Param('id', ParseIntPipe) id: string): Promise<{ message: string }> {
+    const message = await this.rolesService.remove(+id);
+    return { message };
   }
 }

@@ -33,11 +33,9 @@ export class UsersService {
     );
   }
 
-
   async findAll(): Promise<Users[]> {
     return this.usersModel.findAll({ include: { all: true } });
   }
-
 
   async findOne(id: number): Promise<Users> {
     const user = await this.usersModel.findByPk(id, { include: { all: true } });
@@ -53,12 +51,14 @@ export class UsersService {
     return user;
   }
 
-  async remove(id: number): Promise<number> {
-    const user = await this.findOne(id);
-    if (!user) {
-      throw new NotFoundException("User not found.");
+  async remove(id: number): Promise<string> {
+    const result = await this.usersModel.destroy({ where: { id } });
+
+    if (result === 0) {
+      throw new NotFoundException(`User with ${id}-ID was not found.`);
     }
-    return this.usersModel.destroy({ where: { id } });
+
+    return `User with ${id}-ID deleted successfully.`;
   }
 
   async findByPhoneNumber(phone: string): Promise<Users> {

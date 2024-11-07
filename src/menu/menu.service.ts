@@ -54,12 +54,14 @@ export class MenuService {
     return menu;
   }
 
-  async remove(id: number): Promise<{ message: string; deletedMenu: Menu }> {
-    const menu = await this.findOne(id);
-    await menu.destroy();
-    return {
-      message: `Menu with ID ${id} and name "${menu.name}" has been successfully deleted.`,
-      deletedMenu: menu,
-    };
+  async remove(id: number): Promise<string> {
+    const result = await this.menuModel.destroy({ where: { id } });
+
+    if (result === 0) {
+      throw new NotFoundException(`Menu with ${id}-ID was not found.`);
+    }
+
+    return `Menu with ${id}-ID deleted successfully.`;
   }
+
 }

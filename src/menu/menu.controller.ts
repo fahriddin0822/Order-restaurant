@@ -62,10 +62,11 @@ export class MenuController {
   @Roles("SUPERADMIN")
   @UseGuards(RolesGuard)
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Delete a menu by ID' })
-  @ApiResponse({ status: 204, description: 'The menu has been successfully deleted.' })
-  async remove(@Param('id', ParseIntPipe) id: number) {
-    return await this.menuService.remove(id);
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Delete a meal by ID' })
+  @ApiResponse({ status: 200, description: 'The meal has been successfully deleted.', schema: { example: { message: "Meal with {id}-ID deleted successfully." } } })
+  async remove(@Param('id', ParseIntPipe) id: string): Promise<{ message: string }> {
+    const message = await this.menuService.remove(+id);
+    return { message };
   }
 }

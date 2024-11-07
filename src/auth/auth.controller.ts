@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, Res, Req, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, Res, Req, BadRequestException, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignUpWorkerDto } from '../workers/dto';
 import { SignInWorkerDto } from './dto/sign-in.dto';
@@ -6,6 +6,9 @@ import { Response, Request } from 'express';
 import { SignUpUserDto } from '../users/dto/signup-worker.dto';
 import { SignInUserDto } from '../users/dto/signin-user.dto';
 import { JwtService } from '@nestjs/jwt';
+import { Roles } from '../decorators/roles-auth.decorator';
+import { SelfGuard } from '../guards/self.guard';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -34,6 +37,7 @@ export class AuthController {
         return res.json(newTokens);
     }
 
+    // @UseGuards(SelfGuard)
     @Post('signout')
     async logout(@Req() req: Request, @Res() res: Response) {
         const refreshToken = req.cookies['refreshToken'];
@@ -74,6 +78,7 @@ export class AuthController {
         return res.json(newTokens);
     }
 
+    @UseGuards(SelfGuard, JwtAuthGuard)
     @Post('user/signout')
     @HttpCode(HttpStatus.OK)
     async signOutUser(@Req() req: Request, @Res() res: Response) {

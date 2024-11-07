@@ -4,6 +4,7 @@ import { OrderMealsService } from './order_meals.service';
 import { CreateOrderMealDto } from './dto/create-order_meal.dto';
 import { UpdateOrderMealDto } from './dto/update-order_meal.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { SelfGuard } from '../guards/self.guard';
 
 @ApiTags('order-meals')
 @Controller('order-meals')
@@ -43,11 +44,14 @@ export class OrderMealsController {
     return this.orderMealsService.update(+id, updateOrderMealDto);
   }
 
-  @ApiOperation({ summary: 'Remove an order meal by ID' })
-  @ApiResponse({ status: 200, description: 'Order meal deleted successfully.' })
-  @ApiResponse({ status: 404, description: 'Order meal not found.' })
+
+  @UseGuards(SelfGuard)
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: string) {
-    return this.orderMealsService.remove(+id);
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Delete a meal by ID' })
+  @ApiResponse({ status: 200, description: 'The meal has been successfully deleted.', schema: { example: { message: "Meal with {id}-ID deleted successfully." } } })
+  async remove(@Param('id', ParseIntPipe) id: string): Promise<{ message: string }> {
+    const message = await this.orderMealsService.remove(+id);
+    return { message };
   }
 }

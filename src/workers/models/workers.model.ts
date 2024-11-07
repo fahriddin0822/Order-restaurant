@@ -77,6 +77,11 @@ export class Workers extends Model<Workers, WorkersCreationAttribute> {
 
     @Column({
         type: DataType.STRING,
+      })
+      activation_link: string;
+
+    @Column({
+        type: DataType.STRING,
         allowNull: true
     })
     hashed_refresh_token: string;

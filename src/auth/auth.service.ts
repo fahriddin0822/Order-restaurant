@@ -11,6 +11,7 @@ import { SignInUserDto } from '../users/dto/signin-user.dto';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { Users } from '../users/schemas/user.schema';
+// import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +20,7 @@ export class AuthService {
         private readonly workersService: WorkersService,
         private readonly usersService: UsersService,
         private readonly configService: ConfigService,
+        // private readonly mailService: MailService
     ) { }
 
     async signUp(signUpWorkerDto: SignUpWorkerDto) {

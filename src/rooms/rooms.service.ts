@@ -39,8 +39,14 @@ export class RoomsService {
     return room;
   }
 
-  async remove(id: number): Promise<number> {
-    const room = await this.findOne(id);
-    return this.roomModel.destroy({ where: { id } });
+  async remove(id: number): Promise<string> {
+    const result = await this.roomModel.destroy({ where: { id } });
+
+    if (result === 0) {
+      throw new NotFoundException(`Room with ${id}-ID was not found.`);
+    }
+
+    return `Room with ${id}-ID deleted successfully.`;
   }
+
 }

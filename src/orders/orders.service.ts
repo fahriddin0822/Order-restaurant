@@ -62,10 +62,14 @@ export class OrdersService {
     return updatedOrder;
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: number): Promise<string> {
     const result = await this.orderModel.destroy({ where: { id } });
+
     if (result === 0) {
-      throw new NotFoundException(`Order with ID ${id} not found`);
+      throw new NotFoundException(`Order with ${id}-ID was not found.`);
     }
+
+    return `Order with ${id}-ID deleted successfully.`;
   }
+
 }

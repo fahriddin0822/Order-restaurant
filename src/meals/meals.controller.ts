@@ -22,9 +22,6 @@ export class MealsController {
   @ApiOperation({ summary: 'Create a new meal' })
   @ApiResponse({ status: 201, description: 'The meal has been successfully created.' })
   async create(@Body() createMealDto: CreateMealDto) {
-    if (await this.findOneByName(createMealDto.name)) {
-      throw new NotFoundException("Meal is already exist.");
-    }
     return this.mealsService.create(createMealDto);
   }
 
@@ -64,10 +61,12 @@ export class MealsController {
   @Roles("SUPERADMIN")
   @UseGuards(RolesGuard)
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Delete a meal by ID' })
-  @ApiResponse({ status: 204, description: 'The meal has been successfully deleted.' })
-  async remove(@Param('id', ParseIntPipe) id: string) {
-    return await this.mealsService.remove(+id);
+  @ApiResponse({ status: 200, description: 'The meal has been successfully deleted.', schema: { example: { message: "Meal with {id}-ID deleted successfully." } } })
+  async remove(@Param('id', ParseIntPipe) id: string): Promise<{ message: string }> {
+    const message = await this.mealsService.remove(+id);
+    return { message };
   }
+
 }
